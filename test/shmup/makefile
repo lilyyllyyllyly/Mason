@@ -6,8 +6,8 @@ CC=clang
 CFLAGS=-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-but-set-variable -O2
 DEBUG=-fsanitize=address,undefined -g3
 
-INCLUDE=-Iinclude/ -I../../Scaffold/include/
-LIBS= -L../../Scaffold/lib -lscaffold -lm -lraylib
+INCLUDE=-Iinclude/ -I../../include/ -I../../Scaffold/include/
+LIBS=-L../../lib -L../../Scaffold/lib -lmason -lscaffold -lm -lraylib
 
 SRC_DIR=src
 

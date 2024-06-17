@@ -1,9 +1,8 @@
 #include <stdlib.h>
 
 #include "scaffold.h"
-#include "mason_rng.h"
+#include "mason.h"
 
-#include "drawer.h"
 #include "asteroid.h"
 #include "asteroid_spawner.h"
 
@@ -25,15 +24,15 @@ static void process(scaffold_node* spawner, double delta) {
 
 	data->spawn_timer = 0.0;
 
-	scaffold_node* asteroid = create_asteroid(data->drawer, data->col_handler);
+	scaffold_node* asteroid = asteroid_create(data->drawer, data->col_handler);
 	scaffold_node_add_child(spawner, asteroid);
 
-	float game_w = drawer_get_game_size(data->drawer).x;
+	float game_w = mason_drawer_game_size(data->drawer).x;
 	asteroid->local_pos.x = mason_randf_range(0.0f, game_w);
 	asteroid->local_pos.y = POS_Y;
 }
 
-scaffold_node* create_asteroid_spawner(scaffold_node* drawer, scaffold_node* col_handler) {
+scaffold_node* asteroid_spawner_create(scaffold_node* drawer, scaffold_node* col_handler) {
 	asteroid_spawner_data* data = malloc(sizeof(asteroid_spawner_data));
 	data->drawer = drawer;
 	data->col_handler = col_handler;

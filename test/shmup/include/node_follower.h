@@ -9,5 +9,5 @@ typedef struct {
 	int speed;
 } node_follower_data;
 
-scaffold_node* create_node_follower(scaffold_node* target, float speed);
+scaffold_node* node_follower_create(scaffold_node* target, float speed);
 

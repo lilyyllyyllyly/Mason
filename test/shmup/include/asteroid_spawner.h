@@ -8,5 +8,5 @@ typedef struct {
 	double spawn_timer;
 } asteroid_spawner_data;
 
-scaffold_node* create_asteroid_spawner(scaffold_node* drawer, scaffold_node* col_handler);
+scaffold_node* asteroid_spawner_create(scaffold_node* drawer, scaffold_node* col_handler);
 

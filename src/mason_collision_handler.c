@@ -3,7 +3,7 @@
 
 #include "scaffold.h"
 
-#include "collider.h"
+#include "mason_collider.h"
 
 int collision_handler_type = NODE_TYPE_UNASSIGNED;
 
@@ -17,8 +17,8 @@ scaffold_list* collision_handler_add_collider(scaffold_node* handler, scaffold_n
 }
 
 static int circle_circle_collision(scaffold_node* col, scaffold_node* other) {
-	float col_r   = ((collider_data*)(col->data))->shape.circle.radius;
-	float other_r = ((collider_data*)(other->data))->shape.circle.radius;
+	float col_r   = ((mason_collider_data*)(col->data))->shape.circle.radius;
+	float other_r = ((mason_collider_data*)(other->data))->shape.circle.radius;
 
 	return scaffold_vector2_distance(col->global_pos, other->global_pos) <= col_r + other_r;
 }
@@ -33,8 +33,8 @@ static void process(scaffold_node* handler, double delta) {
 			scaffold_node* col   = (scaffold_node*)(elem->data);
 			scaffold_node* other = (scaffold_node*)(other_elem->data);
 
-			collider_data* col_data   = (collider_data*)(col->data);
-			collider_data* other_data = (collider_data*)(other->data);
+			mason_collider_data* col_data   = (mason_collider_data*)(col->data);
+			mason_collider_data* other_data = (mason_collider_data*)(other->data);
 
 			int col_collides   = col_data->mask & other_data->layer;
 			int other_collides = other_data->mask & col_data->layer;
@@ -66,7 +66,7 @@ static void destroy(scaffold_node* handler) {
 	scaffold_node_destroy(handler);
 }
 
-scaffold_node* create_collision_handler() {
+scaffold_node* mason_collision_handler_create() {
 	return scaffold_node_create(
 		&collision_handler_type,
 		NULL,

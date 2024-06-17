@@ -1,32 +1,31 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include <raylib.h>
 
 #include "scaffold.h"
 
-#include "rectangle.h"
-#include "sprite.h"
+#include "mason_rectangle.h"
+#include "mason_sprite.h"
 
-int drawer_type = NODE_TYPE_UNASSIGNED;
+int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
-#include "drawer.h"
+#include "mason_drawer.h"
 
-double drawer_get_frame_time() {
+double mason_drawer_frame_time() {
 	return GetFrameTime();
 }
 
-scaffold_vector2 drawer_get_game_size(scaffold_node* drawer) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+scaffold_vector2 mason_drawer_game_size(scaffold_node* drawer) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 	return (scaffold_vector2){data->target.texture.width, data->target.texture.height};
 }
 
-scaffold_vector2 drawer_get_screen_size() {
+scaffold_vector2 mason_drawer_screen_size() {
 	return (scaffold_vector2){(float)GetScreenWidth(), (float)GetScreenHeight()};
 }
 
-scaffold_vector2 drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vector2 pos) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vector2 pos) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 
 	float scr_w = (float)GetScreenWidth();
 	float scr_h = (float)GetScreenHeight();
@@ -53,7 +52,7 @@ scaffold_vector2 drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vecto
 }
 
 static void destroy(scaffold_node* drawer) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 
 	UnloadRenderTexture(data->target);
 	CloseWindow();
@@ -67,13 +66,13 @@ static void destroy(scaffold_node* drawer) {
 
 typedef struct rectangle_data {
 	scaffold_vector2 size;
-	drawer_data* drawer;
+	mason_drawer_data* drawer;
 	scaffold_list* elem;
 } rectangle_data;
 
 typedef struct sprite_data {
 	Texture2D tex;
-	drawer_data* drawer;
+	mason_drawer_data* drawer;
 	scaffold_list* elem;
 } sprite_data;
 
@@ -98,7 +97,7 @@ static void sprite_destroy(scaffold_node* sprite) {
 }
 
 void drawer_add_rectangle(scaffold_node* drawer, scaffold_node* rect, scaffold_vector2 size) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 	data->sprites = scaffold_list_insert(data->sprites, (void*)rect);
 
 	rectangle_data* rect_data = malloc(sizeof(rectangle_data));
@@ -111,7 +110,7 @@ void drawer_add_rectangle(scaffold_node* drawer, scaffold_node* rect, scaffold_v
 }
 
 void drawer_add_sprite(scaffold_node* drawer, scaffold_node* sprite, const char* filename) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 	data->sprites = scaffold_list_insert(data->sprites, (void*)sprite);
 
 	sprite_data* spr_data = malloc(sizeof(sprite_data));
@@ -134,7 +133,7 @@ static void draw_sprite(scaffold_node* sprite) {
 }
 
 static void process(scaffold_node* drawer, double delta) {
-	drawer_data* data = (drawer_data*)(drawer->data);
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 
 	// Drawing sprites to target texture
 	BeginTextureMode(data->target);
@@ -144,9 +143,9 @@ static void process(scaffold_node* drawer, double delta) {
 	while (elem != NULL) {
 		scaffold_node* node = (scaffold_node*)(elem->data);
 
-		if (node->type == rectangle_type) {
+		if (node->type == mason_rectangle_type) {
 			draw_rectangle(node);
-		} else if (node->type == sprite_type) {
+		} else if (node->type == mason_sprite_type) {
 			draw_sprite(node);
 		}
 
@@ -186,18 +185,18 @@ static void process(scaffold_node* drawer, double delta) {
 	EndDrawing();
 }
 
-scaffold_node* create_drawer(int win_w, int win_h, const char* title, int fps) {
+scaffold_node* mason_drawer_create(int win_w, int win_h, const char* title, int fps) {
 	SetTraceLogLevel(LOG_WARNING); /* getting rid of annoying init info */
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 	InitWindow(win_w, win_h, title);
 	SetTargetFPS(fps);
 
-	drawer_data* data = malloc(sizeof(drawer_data));
+	mason_drawer_data* data = malloc(sizeof(mason_drawer_data));
 	data->sprites = NULL;
 	data->target = LoadRenderTexture(win_w, win_h);
 	
 	return scaffold_node_create(
-		&drawer_type,
+		&mason_drawer_type,
 		data,
 		process,
 		destroy

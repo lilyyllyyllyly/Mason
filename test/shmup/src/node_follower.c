@@ -21,7 +21,7 @@ static void process(scaffold_node* follower, double delta) {
 	scaffold_node_set_global_pos(follower, scaffold_vector2_add(follower->global_pos, move));
 }
 
-scaffold_node* create_node_follower(scaffold_node* target, float speed) {
+scaffold_node* node_follower_create(scaffold_node* target, float speed) {
 	node_follower_data* data = malloc(sizeof(node_follower_data));
 	data->target = target;
 	data->speed = speed;

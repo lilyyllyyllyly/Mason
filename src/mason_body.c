@@ -2,9 +2,9 @@
 
 #include "scaffold.h"
 
-int body_type = NODE_TYPE_UNASSIGNED;
+int mason_body_type = NODE_TYPE_UNASSIGNED;
 
-#include "body.h"
+#include "mason_body.h"
 
 static void destroy(scaffold_node* body) {
 	free(body->data);
@@ -12,16 +12,16 @@ static void destroy(scaffold_node* body) {
 }
 
 static void process(scaffold_node* body, double delta) {
-	body_data* data = (body_data*)(body->data);
+	mason_body_data* data = (mason_body_data*)(body->data);
 	body->local_pos = scaffold_vector2_add(body->local_pos, scaffold_vector2_scale(data->vel, delta));
 }
 
-scaffold_node* create_body() {
-	body_data* data = malloc(sizeof(body_data));
+scaffold_node* mason_body_create() {
+	mason_body_data* data = malloc(sizeof(mason_body_data));
 	data->vel = (scaffold_vector2){0, 0};
 
 	return scaffold_node_create(
-		&body_type,
+		&mason_body_type,
 		data,
 		process,
 		destroy

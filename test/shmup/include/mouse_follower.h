@@ -2,5 +2,5 @@
 
 extern int mouse_follower_type;
 
-scaffold_node* create_mouse_follower(scaffold_node* drawer);
+scaffold_node* mouse_follower_create(scaffold_node* drawer);
 

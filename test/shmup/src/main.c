@@ -2,9 +2,8 @@
 #include <signal.h>
 
 #include "scaffold.h"
+#include "mason.h"
 
-#include "drawer.h"
-#include "collision_handler.h"
 #include "mouse_follower.h"
 #include "ship.h"
 #include "bullet.h"
@@ -30,28 +29,24 @@ int main() {
 
 	scaffold_node* root = scaffold_initialize();
 
-	scaffold_node* col_handler = create_collision_handler();
+	scaffold_node* col_handler = mason_collision_handler_create();
 	scaffold_node_add_child(root, col_handler);
 
-	scaffold_node* drawer = create_drawer(WIN_W, WIN_H, WIN_TITLE, FPS);
+	scaffold_node* drawer = mason_drawer_create(WIN_W, WIN_H, WIN_TITLE, FPS);
 	scaffold_node_add_child(root, drawer);
 
-	scaffold_node* mouse = create_mouse_follower(drawer);
+	scaffold_node* mouse = mouse_follower_create(drawer);
 	scaffold_node_add_child(root, mouse);
 
-	scaffold_node* ship = create_ship(drawer, col_handler, mouse);
+	scaffold_node* ship = ship_create(drawer, col_handler, mouse);
 	scaffold_node_add_child(root, ship);
 	ship->local_pos = (scaffold_vector2){WIN_W/2, WIN_H/2};
-
-	scaffold_node* bullet = create_bullet(drawer);
-	scaffold_node_add_child(root, bullet);
-	bullet->local_pos = ship->local_pos;
 	
-	scaffold_node* asteroid = create_asteroid_spawner(drawer, col_handler);
+	scaffold_node* asteroid = asteroid_spawner_create(drawer, col_handler);
 	scaffold_node_add_child(root, asteroid);
 
 	while (!end) {
-		scaffold_process_cleanup(root, drawer_get_frame_time());
+		scaffold_process_cleanup(root, mason_drawer_frame_time());
 	}
 
 	root->destroy(root);
