@@ -3,9 +3,9 @@
 
 #include "scaffold.h"
 
-#include "mason_collider.h"
+#include "mason.h"
 
-int collision_handler_type = NODE_TYPE_UNASSIGNED;
+int mason_collision_handler_type = NODE_TYPE_UNASSIGNED;
 
 void collision_handler_delete_collider(scaffold_node* handler, scaffold_list* elem) {
 	handler->data = scaffold_list_delete_element((scaffold_list*)(handler->data), elem);
@@ -43,6 +43,19 @@ static void process(scaffold_node* handler, double delta) {
 
 			if (col_data->type == other_data->type && col_data->type == CIRCLE_SHAPE) {
 				if (circle_circle_collision(col, other)) {
+					if (col_collides && col_data->on_collision != NULL) {
+						col_data->on_collision(col, other);
+					}
+
+					if (other_collides && other_data->on_collision != NULL) {
+						other_data->on_collision(other, col);
+					}
+				}
+			}
+
+			// TODO: rect rect collision
+			if (col_data->type == other_data->type && col_data->type == RECT_SHAPE) {
+				if (rect_rect_collision(col, other)) {
 					if (col_collides && col_data->on_collision != NULL) {
 						col_data->on_collision(col, other);
 					}
