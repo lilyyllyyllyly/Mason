@@ -7,4 +7,5 @@
 #include "mason_rectangle.h"
 #include "mason_rng.h"
 #include "mason_sprite.h"
+#include "mason_shape.h"
 

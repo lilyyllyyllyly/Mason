@@ -1,23 +1,15 @@
 #pragma once
 
 #include "scaffold.h"
+#include "mason_shape.h"
 
 extern int mason_collider_type;
-
-typedef enum {
-	CIRCLE_SHAPE = 0,
-	RECT_SHAPE,
-} mason_shape_type;
 
 typedef struct {
 	unsigned int layer;
 	unsigned int mask;
 
-	mason_shape_type type;
-	union {
-		float radius;
-		scaffold_vector2 size;
-	} shape;
+	mason_shape shape;
 
 	void (*on_collision)(scaffold_node*, scaffold_node*);
 

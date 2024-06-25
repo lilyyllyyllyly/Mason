@@ -38,8 +38,8 @@ scaffold_node* mason_circle_collider_create(scaffold_node* collision_handler, un
 	scaffold_node* circle = create_collider(collision_handler, layer, mask, on_collision);
 
 	mason_collider_data* data = (mason_collider_data*)(circle->data);
-	data->type = CIRCLE_SHAPE;
-	data->shape.radius = radius;
+	data->shape.type = MASON_CIRCLE;
+	data->shape.u.radius = radius;
 
 	return circle;
 }
@@ -48,8 +48,8 @@ scaffold_node* mason_rect_collider_create(scaffold_node* collision_handler, unsi
 	scaffold_node* rect = create_collider(collision_handler, layer, mask, on_collision);
 
 	mason_collider_data* data = (mason_collider_data*)(rect->data);
-	data->type = RECT_SHAPE;
-	data->shape.size = size;
+	data->shape.type = MASON_RECTANGLE;
+	data->shape.u.size = size;
 
 	return rect;
 }
