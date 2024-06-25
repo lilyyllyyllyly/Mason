@@ -17,10 +17,20 @@ scaffold_list* collision_handler_add_collider(scaffold_node* handler, scaffold_n
 }
 
 static int circle_circle_collision(scaffold_node* col, scaffold_node* other) {
-	float col_r   = ((mason_collider_data*)(col->data))->shape.circle.radius;
-	float other_r = ((mason_collider_data*)(other->data))->shape.circle.radius;
+	float col_r   = ((mason_collider_data*)(col->data))->shape.radius;
+	float other_r = ((mason_collider_data*)(other->data))->shape.radius;
 
 	return scaffold_vector2_distance(col->global_pos, other->global_pos) <= col_r + other_r;
+}
+
+static int rect_rect_collision(scaffold_node* col, scaffold_node* other) {
+	scaffold_vector2 col_size   = ((mason_collider_data*)(col->data))->shape.size;
+	scaffold_vector2 other_size = ((mason_collider_data*)(other->data))->shape.size;
+
+	return col->global_pos.x < other->global_pos.x + other_size.x &&
+	       col->global_pos.x + col_size.x >   other->global_pos.x &&
+	       col->global_pos.y < other->global_pos.y + other_size.y &&
+	       col->global_pos.y + col_size.y >   other->global_pos.y;
 }
 
 static void process(scaffold_node* handler, double delta) {
@@ -51,9 +61,9 @@ static void process(scaffold_node* handler, double delta) {
 						other_data->on_collision(other, col);
 					}
 				}
+				goto next;
 			}
 
-			// TODO: rect rect collision
 			if (col_data->type == other_data->type && col_data->type == RECT_SHAPE) {
 				if (rect_rect_collision(col, other)) {
 					if (col_collides && col_data->on_collision != NULL) {
@@ -64,6 +74,7 @@ static void process(scaffold_node* handler, double delta) {
 						other_data->on_collision(other, col);
 					}
 				}
+				goto next;
 			}
 
 next:
@@ -81,7 +92,7 @@ static void destroy(scaffold_node* handler) {
 
 scaffold_node* mason_collision_handler_create() {
 	return scaffold_node_create(
-		&collision_handler_type,
+		&mason_collision_handler_type,
 		NULL,
 		process,
 		destroy
