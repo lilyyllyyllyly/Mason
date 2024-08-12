@@ -24,9 +24,7 @@ scaffold_vector2 mason_drawer_screen_size() {
 	return (scaffold_vector2){(float)GetScreenWidth(), (float)GetScreenHeight()};
 }
 
-scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vector2 pos) {
-	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
-
+void update_game_dimensions(mason_drawer_data* data) {
 	float scr_w = (float)GetScreenWidth();
 	float scr_h = (float)GetScreenHeight();
 
@@ -35,7 +33,7 @@ scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold
 
 	float dst_w, dst_h, dst_x, dst_y;
 
-	if (scr_w > scr_h) {
+	if ((scr_w/scr_h) > (game_w/game_h)) {
 		dst_h = scr_h;
 		dst_w = game_w * (scr_h/game_h);
 	} else {
@@ -45,7 +43,31 @@ scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold
 
 	dst_x = (scr_w - dst_w)/2;
 	dst_y = (scr_h - dst_h)/2;
+
+	data->scr_size.x = scr_w;
+	data->scr_size.y = scr_h;
+
+	data->game_size.x = game_w;
+	data->game_size.y = game_h;
+
+	data->dst_pos.x = dst_x;
+	data->dst_pos.y = dst_y;
+	data->dst_size.x = dst_w;
+	data->dst_size.y = dst_h;
+}
+
+scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vector2 pos) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
+
+	update_game_dimensions(data);
 	
+	int dst_x = data->dst_pos.x;
+	int dst_y = data->dst_pos.y;
+	int dst_w = data->dst_size.x;
+	int dst_h = data->dst_size.y;
+	int game_w = data->game_size.x;
+	int game_h = data->game_size.y;
+
 	int ret_x = (pos.x - dst_x) * game_w / dst_w;
 	int ret_y = (pos.y - dst_y) * game_h / dst_h;
 	return (scaffold_vector2){ret_x, ret_y};
@@ -158,28 +180,14 @@ static void process(scaffold_node* drawer, double delta) {
 	BeginDrawing();
 	ClearBackground(BLACK);
 
-	float scr_w = (float)GetScreenWidth();
-	float scr_h = (float)GetScreenHeight();
-
-	float game_w = (float)(data->target.texture.width);
-	float game_h = (float)(data->target.texture.height);
-
-	float dst_w, dst_h, dst_x, dst_y;
-
-	if (scr_w > scr_h) {
-		dst_h = scr_h;
-		dst_w = game_w * (scr_h/game_h);
-	} else {
-		dst_w = scr_w;
-		dst_h = game_h * (scr_w/game_w);
-	}
-
-	dst_x = (scr_w - dst_w)/2;
-	dst_y = (scr_h - dst_h)/2;
+	update_game_dimensions(data);
+	scaffold_vector2 game_size = data->game_size;
+	scaffold_vector2 dst_size = data->dst_size;
+	scaffold_vector2 dst_pos = data->dst_pos;
 
 	DrawTexturePro(data->target.texture,
-			(Rectangle){0.0f, game_h, game_w, -game_h},
-			(Rectangle){(scr_w - dst_w)/2, (scr_h - dst_h)/2, dst_w, dst_h},
+			(Rectangle){0.0f, game_size.y, game_size.x, -game_size.y},
+			(Rectangle){dst_pos.x, dst_pos.y, dst_size.x, dst_size.y},
 			(Vector2){0.0f, 0.0f}, 0, WHITE);
 
 	EndDrawing();
