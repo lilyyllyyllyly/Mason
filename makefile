@@ -3,7 +3,6 @@ CFLAGS=-Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-but-set-variable 
 DEBUG=-fsanitize=address,undefined -g3
 
 INCLUDE=-Iinclude/ -IScaffold/include/
-LIBD=-LScaffold/lib/ -lscaffold
 
 SRC_DIR=src
 OBJ_DIR=build

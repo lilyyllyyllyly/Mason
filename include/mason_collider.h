@@ -5,11 +5,22 @@
 
 extern int mason_collider_type;
 
+typedef enum {
+	MASON_COL_CIRCLE = 0,
+	MASON_COL_RECTANGLE
+} mason_collision_shape;
+
 typedef struct {
 	unsigned int layer;
 	unsigned int mask;
 
-	mason_shape shape;
+	struct {
+		mason_collision_shape type;
+		union {
+			float radius;
+			scaffold_vector2 size;
+		};
+	} shape;
 
 	void (*on_collision)(scaffold_node*, scaffold_node*);
 
