@@ -11,17 +11,27 @@ int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
 #include "mason_drawer.h"
 
-double mason_drawer_frame_time() {
+double mason_drawer_get_frame_time() {
 	return GetFrameTime();
 }
 
-scaffold_vector2 mason_drawer_game_size(scaffold_node* drawer) {
+scaffold_vector2 mason_drawer_get_game_size(scaffold_node* drawer) {
 	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
-	return (scaffold_vector2){data->target.texture.width, data->target.texture.height};
+	return data->game_size;
 }
 
-scaffold_vector2 mason_drawer_screen_size() {
+void mason_drawer_set_game_size(scaffold_node* drawer, int width, int height) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
+	UnloadRenderTexture(data->target);
+	data->target = LoadRenderTexture(width, height);
+}
+
+scaffold_vector2 mason_drawer_get_window_size() {
 	return (scaffold_vector2){(float)GetScreenWidth(), (float)GetScreenHeight()};
+}
+
+void mason_drawer_set_window_size(int width, int height) {
+	SetWindowSize(width, height);
 }
 
 void update_game_dimensions(mason_drawer_data* data) {
@@ -73,39 +83,11 @@ scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold
 	return (scaffold_vector2){ret_x, ret_y};
 }
 
-static void destroy(scaffold_node* drawer) {
-	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
-
-	UnloadRenderTexture(data->target);
-	CloseWindow();
-
-	scaffold_list_destroy(data->sprites);
-
-	if (drawer->data) free(drawer->data);
-
-	scaffold_node_destroy(drawer);
-}
-
-typedef struct rectangle_data {
-	scaffold_vector2 size;
-	mason_drawer_data* drawer;
-	scaffold_list* elem;
-} rectangle_data;
-
 typedef struct sprite_data {
 	Texture2D tex;
 	mason_drawer_data* drawer;
 	scaffold_list* elem;
 } sprite_data;
-
-static void rectangle_destroy(scaffold_node* rectangle) {
-	rectangle_data* rect_data = (rectangle_data*)(rectangle->data);
-
-	rect_data->drawer->sprites = (void*)scaffold_list_delete_element(rect_data->drawer->sprites, rect_data->elem);
-
-	free(rectangle->data);
-	scaffold_node_destroy(rectangle);
-}
 
 static void sprite_destroy(scaffold_node* sprite) {
 	sprite_data* spr_data = (sprite_data*)(sprite->data);
@@ -118,17 +100,14 @@ static void sprite_destroy(scaffold_node* sprite) {
 	scaffold_node_destroy(sprite);
 }
 
-void drawer_add_rectangle(scaffold_node* drawer, scaffold_node* rect, scaffold_vector2 size) {
-	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
+void drawer_delete_sprite(mason_drawer_data* drawer, scaffold_list* elem) {
+	drawer->sprites = scaffold_list_delete_element(drawer->sprites, elem);
+}
+
+scaffold_list* drawer_add_rectangle(mason_rectangle_data* rect) {
+	mason_drawer_data* data = rect->drawer;
 	data->sprites = scaffold_list_insert(data->sprites, (void*)rect);
-
-	rectangle_data* rect_data = malloc(sizeof(rectangle_data));
-	rect_data->size = size;
-	rect_data->drawer = data;
-	rect_data->elem = data->sprites;
-
-	rect->data = rect_data;
-	rect->destroy = rectangle_destroy;
+	return data->sprites;
 }
 
 void drawer_add_sprite(scaffold_node* drawer, scaffold_node* sprite, const char* filename) {
@@ -145,7 +124,7 @@ void drawer_add_sprite(scaffold_node* drawer, scaffold_node* sprite, const char*
 }
 
 static void draw_rectangle(scaffold_node* rect) {
-	scaffold_vector2 size = ((rectangle_data*)(rect->data))->size;
+	scaffold_vector2 size = ((mason_rectangle_data*)(rect->data))->size;
 	DrawRectangle(rect->global_pos.x, rect->global_pos.y, size.x, size.y, BLACK);
 }
 
@@ -191,6 +170,19 @@ static void process(scaffold_node* drawer, double delta) {
 			(Vector2){0.0f, 0.0f}, 0, WHITE);
 
 	EndDrawing();
+}
+
+static void destroy(scaffold_node* drawer) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
+
+	UnloadRenderTexture(data->target);
+	CloseWindow();
+
+	scaffold_list_destroy(data->sprites);
+
+	if (drawer->data) free(drawer->data);
+
+	scaffold_node_destroy(drawer);
 }
 
 scaffold_node* mason_drawer_create(int win_w, int win_h, const char* title, int fps) {
