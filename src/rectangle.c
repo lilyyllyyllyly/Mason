@@ -27,7 +27,7 @@ scaffold_node* mason_rectangle_create(scaffold_node* drawer, scaffold_vector2 si
 		destroy
 	);
 
-	data->elem = drawer_add_rectangle(drawer, rect, size);
+	data->elem = drawer_add_sprite(data->drawer, rect);
 
 	return rect;
 }

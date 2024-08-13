@@ -83,44 +83,12 @@ scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold
 	return (scaffold_vector2){ret_x, ret_y};
 }
 
-typedef struct sprite_data {
-	Texture2D tex;
-	mason_drawer_data* drawer;
-	scaffold_list* elem;
-} sprite_data;
-
-static void sprite_destroy(scaffold_node* sprite) {
-	sprite_data* spr_data = (sprite_data*)(sprite->data);
-
-	spr_data->drawer->sprites = scaffold_list_delete_element(spr_data->drawer->sprites, spr_data->elem);
-
-	UnloadTexture(spr_data->tex);
-
-	free(sprite->data);
-	scaffold_node_destroy(sprite);
+scaffold_list* drawer_add_sprite(mason_drawer_data* drawer, scaffold_node* sprite) {
+	return drawer->sprites = scaffold_list_insert(drawer->sprites, (void*)sprite);
 }
 
 void drawer_delete_sprite(mason_drawer_data* drawer, scaffold_list* elem) {
 	drawer->sprites = scaffold_list_delete_element(drawer->sprites, elem);
-}
-
-scaffold_list* drawer_add_rectangle(mason_rectangle_data* rect) {
-	mason_drawer_data* data = rect->drawer;
-	data->sprites = scaffold_list_insert(data->sprites, (void*)rect);
-	return data->sprites;
-}
-
-void drawer_add_sprite(scaffold_node* drawer, scaffold_node* sprite, const char* filename) {
-	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
-	data->sprites = scaffold_list_insert(data->sprites, (void*)sprite);
-
-	sprite_data* spr_data = malloc(sizeof(sprite_data));
-	spr_data->tex = LoadTexture(filename);
-	spr_data->drawer = data;
-	spr_data->elem = data->sprites;
-
-	sprite->data = spr_data;
-	sprite->destroy = sprite_destroy;
 }
 
 static void draw_rectangle(scaffold_node* rect) {
@@ -129,7 +97,7 @@ static void draw_rectangle(scaffold_node* rect) {
 }
 
 static void draw_sprite(scaffold_node* sprite) {
-	Texture2D tex = ((sprite_data*)(sprite->data))->tex;
+	Texture2D tex = ((mason_sprite_data*)(sprite->data))->tex;
 	DrawTexture(tex, sprite->global_pos.x, sprite->global_pos.y, WHITE);
 }
 
