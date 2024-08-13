@@ -26,12 +26,22 @@ void mason_drawer_set_game_size(scaffold_node* drawer, int width, int height) {
 	data->target = LoadRenderTexture(width, height);
 }
 
+void mason_drawer_set_game_size_vec(scaffold_node* drawer, scaffold_vector2 size) {
+	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
+	UnloadRenderTexture(data->target);
+	data->target = LoadRenderTexture(size.x, size.y);
+}
+
 scaffold_vector2 mason_drawer_get_window_size() {
 	return (scaffold_vector2){(float)GetScreenWidth(), (float)GetScreenHeight()};
 }
 
 void mason_drawer_set_window_size(int width, int height) {
 	SetWindowSize(width, height);
+}
+
+void mason_drawer_set_window_size_vec(scaffold_vector2 size) {
+	SetWindowSize(size.x, size.y);
 }
 
 void update_game_dimensions(mason_drawer_data* data) {

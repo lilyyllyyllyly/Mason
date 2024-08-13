@@ -10,8 +10,11 @@ double mason_drawer_get_frame_time();
 
 scaffold_vector2 mason_drawer_get_game_size(scaffold_node* drawer);
 void mason_drawer_set_game_size(scaffold_node* drawer, int width, int height);
+void mason_drawer_set_game_size_vec(scaffold_node* drawer, scaffold_vector2 size);
+
 scaffold_vector2 mason_drawer_get_window_size();
 void mason_drawer_set_window_size(int width, int height);
+void mason_drawer_set_window_size_vec(scaffold_vector2 size);
 
 scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold_vector2 pos);
 
