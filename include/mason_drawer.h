@@ -6,6 +6,8 @@
 
 extern int mason_drawer_type;
 
+scaffold_vector2 mason_drawer_get_image_size(const char* filename);
+
 double mason_drawer_get_frame_time();
 
 scaffold_vector2 mason_drawer_get_game_size(scaffold_node* drawer);

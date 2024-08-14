@@ -11,6 +11,13 @@ int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
 #include "mason_drawer.h"
 
+scaffold_vector2 mason_drawer_get_image_size(const char* filename) {
+	Image img = LoadImage(filename);
+	scaffold_vector2 size = (scaffold_vector2){img.width, img.height};
+	UnloadImage(img);
+	return size;
+}
+
 double mason_drawer_get_frame_time() {
 	return GetFrameTime();
 }
