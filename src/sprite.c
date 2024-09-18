@@ -12,18 +12,18 @@ int mason_sprite_type = NODE_TYPE_UNASSIGNED;
 static void destroy(scaffold_node* sprite) {
 	mason_sprite_data* data = (mason_sprite_data*)(sprite->data);
 
-	UnloadTexture(data->tex);
+	if (data->shape.type == MASON_SPR_TEXTURE) UnloadTexture(data->shape.tex);
+
 	drawer_delete_sprite(data->drawer, data->elem);
 
 	free(sprite->data);
 	scaffold_node_destroy(sprite);
 }
 
-scaffold_node* mason_sprite_create(scaffold_node* drawer, const char* filename) {
+static scaffold_node* create_sprite(scaffold_node* drawer, int draw_order) {
 	mason_sprite_data* data = malloc(sizeof(mason_sprite_data));
 	data->drawer = (mason_drawer_data*)(drawer->data);
-	data->tex = LoadTexture(filename);
-	data->size = (scaffold_vector2){data->tex.width, data->tex.height};
+	data->draw_order = draw_order;
 
 	scaffold_node* sprite = scaffold_node_create(
 		&mason_sprite_type,
@@ -33,6 +33,27 @@ scaffold_node* mason_sprite_create(scaffold_node* drawer, const char* filename) 
 	);
 
 	data->elem = drawer_add_sprite(data->drawer, sprite);
+
+	return sprite;
+}
+
+scaffold_node* mason_texture_create(scaffold_node* drawer, int draw_order, const char* filename) {
+	scaffold_node* sprite = create_sprite(drawer, draw_order);
+	mason_sprite_data* data = (mason_sprite_data*)(sprite->data);
+
+	data->shape.type = MASON_SPR_TEXTURE;
+	data->shape.tex = LoadTexture(filename);
+	data->shape.tex_size = (scaffold_vector2){data->tex.width, data->tex.height};
+
+	return sprite;
+}
+
+scaffold_node* mason_rectangle_create(scaffold_node* drawer, int draw_order, scaffold_vector2 size) {
+	scaffold_node* sprite = create_sprite(drawer, draw_order);
+	mason_sprite_data* data = (mason_sprite_data*)(sprite->data);
+
+	data->shape.type = MASON_SPR_RECTANGLE;
+	data->shape.rect_size = size;
 
 	return sprite;
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "scaffold.h"
-#include "mason_shape.h"
 
 extern int mason_collider_type;
 
@@ -17,8 +16,8 @@ typedef struct {
 	struct {
 		mason_collision_shape type;
 		union {
-			float radius;
-			scaffold_vector2 size;
+			float radius; // circle
+			scaffold_vector2 size; // rectangle
 		};
 	} shape;
 
