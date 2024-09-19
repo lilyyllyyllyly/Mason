@@ -10,6 +10,10 @@ int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
 #include "mason_drawer.h"
 
+int mason_drawer_get_text_width(const char* text, int font_size) {
+	return MeasureText(text, font_size);
+}
+
 scaffold_vector2 mason_drawer_get_image_size(const char* filename) {
 	Image img = LoadImage(filename);
 	scaffold_vector2 size = (scaffold_vector2){img.width, img.height};
@@ -139,8 +143,11 @@ static void draw_rectangle(scaffold_node* rect, mason_sprite_data* data) {
 }
 
 static void draw_texture(scaffold_node* text, mason_sprite_data* data) {
-	Texture2D tex = data->shape.tex;
-	DrawTexture(tex, text->global_pos.x, text->global_pos.y, WHITE);
+	DrawTexture(data->shape.texture, text->global_pos.x, text->global_pos.y, WHITE);
+}
+
+static void draw_label(scaffold_node* label, mason_sprite_data* data) {
+	DrawText(data->shape.text, label->global_pos.x, label->global_pos.y, data->shape.font_size, BLACK);
 }
 
 static void process(scaffold_node* drawer, double delta) {
@@ -159,6 +166,8 @@ static void process(scaffold_node* drawer, double delta) {
 			draw_rectangle(node, spr_data);
 		} else if (spr_data->shape.type == MASON_SPR_TEXTURE) {
 			draw_texture(node, spr_data);
+		} else if (spr_data->shape.type == MASON_SPR_LABEL) {
+			draw_label(node, spr_data);
 		}
 
 		elem = elem->next;

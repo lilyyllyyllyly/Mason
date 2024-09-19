@@ -6,6 +6,7 @@
 
 extern int mason_drawer_type;
 
+int mason_drawer_get_text_width(const char* text, int font_size);
 scaffold_vector2 mason_drawer_get_image_size(const char* filename);
 
 double mason_drawer_get_frame_time();
