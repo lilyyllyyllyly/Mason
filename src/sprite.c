@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <raylib.h>
 
@@ -13,6 +14,7 @@ static void destroy(scaffold_node* sprite) {
 	mason_sprite_data* data = (mason_sprite_data*)(sprite->data);
 
 	if (data->shape.type == MASON_SPR_TEXTURE) UnloadTexture(data->shape.texture);
+	else if (data->shape.type == MASON_SPR_LABEL && data->shape.format) free(data->shape.text);
 
 	drawer_delete_sprite(data->drawer, data->elem);
 
@@ -58,13 +60,21 @@ scaffold_node* mason_rectangle_create(scaffold_node* drawer, int draw_order, sca
 	return sprite;
 }
 
-scaffold_node* mason_label_create(scaffold_node* drawer, int draw_order, const char* text, int font_size) {
+scaffold_node* mason_label_create(scaffold_node* drawer, int draw_order, char* text, int font_size, int format) {
 	scaffold_node* sprite = create_sprite(drawer, draw_order);
 	mason_sprite_data* data = (mason_sprite_data*)(sprite->data);
 
 	data->shape.type = MASON_SPR_LABEL;
-	data->shape.text = text;
 	data->shape.font_size = font_size;
+	data->shape.format = format;
+
+	if (format) {
+		size_t text_len = strlen(text) + 1;
+		data->shape.text = malloc(text_len);
+		memcpy(data->shape.text, text, text_len);
+	} else {
+		data->shape.text = text;
+	}
 
 	return sprite;
 }

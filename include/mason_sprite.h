@@ -28,8 +28,9 @@ typedef struct {
 			scaffold_vector2 rect_size; // rectangle
 
 			struct {
-				const char* text;
+				char* text;
 				int font_size;
+				int format;
 			}; // label
 		};
 	} shape;
@@ -37,5 +38,5 @@ typedef struct {
 
 scaffold_node* mason_texture_create(scaffold_node* drawer, int draw_order, const char* filename);
 scaffold_node* mason_rectangle_create(scaffold_node* drawer, int draw_order, scaffold_vector2 size);
-scaffold_node* mason_label_create(scaffold_node* drawer, int draw_order, const char* text, int font_size);
+scaffold_node* mason_label_create(scaffold_node* drawer, int draw_order, char* text, int font_size, int format);
 
