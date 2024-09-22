@@ -10,6 +10,10 @@ int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
 #include "mason_drawer.h"
 
+int mason_drawer_window_should_close() {
+	return WindowShouldClose();
+}
+
 int mason_drawer_get_text_width(const char* text, int font_size) {
 	return MeasureText(text, font_size);
 }
