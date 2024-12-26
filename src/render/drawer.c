@@ -3,12 +3,11 @@
 #include <raylib.h>
 
 #include "scaffold.h"
-
-#include "mason_sprite.h"
+#include "render/mason_sprite.h"
 
 int mason_drawer_type = NODE_TYPE_UNASSIGNED;
 
-#include "mason_drawer.h"
+#include "render/mason_drawer.h"
 
 int mason_drawer_window_should_close() {
 	return WindowShouldClose();
@@ -58,7 +57,7 @@ void mason_drawer_set_window_size_vec(scaffold_vector2 size) {
 	SetWindowSize(size.x, size.y);
 }
 
-void update_game_dimensions(mason_drawer_data* data) {
+static void update_game_dimensions(mason_drawer_data* data) {
 	float scr_w = (float)GetScreenWidth();
 	float scr_h = (float)GetScreenHeight();
 
@@ -107,15 +106,13 @@ scaffold_vector2 mason_drawer_screen_to_game_pos(scaffold_node* drawer, scaffold
 	return (scaffold_vector2){ret_x, ret_y};
 }
 
-scaffold_list* drawer_add_sprite(mason_drawer_data* drawer, scaffold_node* sprite) {
-	mason_sprite_data* spr_data = (mason_sprite_data*)(sprite->data);
-
+scaffold_list* drawer_add_sprite(mason_drawer_data* drawer, mason_sprite_data* sprite) {
 	// loop through the sprites list until a sprite with the same or higher draw_order is found
 	for (scaffold_list* elem = drawer->sprites; elem != NULL; elem = elem->next) {
-		mason_sprite_data* elem_data = (mason_sprite_data*)(((scaffold_node*)(elem->data))->data);
+		mason_sprite_data* elem_data = (mason_sprite_data*)(elem->data);
 
 		// draw order of current element higher or equal, insert the new sprite before that element
-		if (elem_data->draw_order >= spr_data->draw_order) {
+		if (elem_data->draw_order >= sprite->draw_order) {
 			// if this is the first element, the list needs to be updated
 			if (elem == drawer->sprites) {
 				return drawer->sprites = scaffold_list_insert(elem, (void*)sprite);
@@ -141,19 +138,6 @@ void drawer_delete_sprite(mason_drawer_data* drawer, scaffold_list* elem) {
 	drawer->sprites = scaffold_list_delete_element(drawer->sprites, elem);
 }
 
-static void draw_rectangle(scaffold_node* rect, mason_sprite_data* data) {
-	scaffold_vector2 size = data->shape.rect_size;
-	DrawRectangle(rect->global_pos.x, rect->global_pos.y, size.x, size.y, BLACK);
-}
-
-static void draw_texture(scaffold_node* text, mason_sprite_data* data) {
-	DrawTexture(data->shape.texture, text->global_pos.x, text->global_pos.y, WHITE);
-}
-
-static void draw_label(scaffold_node* label, mason_sprite_data* data) {
-	DrawText(data->shape.text, label->global_pos.x, label->global_pos.y, data->shape.font_size, BLACK);
-}
-
 static void process(scaffold_node* drawer, double delta) {
 	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 
@@ -163,17 +147,8 @@ static void process(scaffold_node* drawer, double delta) {
 
 	scaffold_list* elem = data->sprites;
 	while (elem != NULL) {
-		scaffold_node* node = (scaffold_node*)(elem->data);
-		mason_sprite_data* spr_data = (mason_sprite_data*)(node->data);
-
-		if (spr_data->shape.type == MASON_SPR_RECTANGLE) {
-			draw_rectangle(node, spr_data);
-		} else if (spr_data->shape.type == MASON_SPR_TEXTURE) {
-			draw_texture(node, spr_data);
-		} else if (spr_data->shape.type == MASON_SPR_LABEL) {
-			draw_label(node, spr_data);
-		}
-
+		mason_sprite_data* sprite = (mason_sprite_data*)(elem->data);
+		sprite->draw(sprite->node);
 		elem = elem->next;
 	}
 

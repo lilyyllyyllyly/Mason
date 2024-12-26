@@ -11,7 +11,7 @@ SRC_DIR=src
 OBJ_DIR=build
 OUT_DIR=lib
 
-SOURCES=$(wildcard ${SRC_DIR}/*.c)
+SOURCES=$(wildcard ${SRC_DIR}/*.c) $(wildcard ${SRC_DIR}/*/*.c)
 
 OUTPUT=libmason.a
 
@@ -26,7 +26,7 @@ enable-debug:
 raylib:
 ifeq (${RAYLIB_LIBTYPE},STATIC)
 	@echo [building raylib...]
-	$(MAKE) -C raylib/src/
+	$(MAKE) -C ${RAYLIB_INCLUDE_DIR}
 endif
 
 compile:
