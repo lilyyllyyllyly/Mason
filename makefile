@@ -13,6 +13,8 @@ OUT_DIR=lib
 
 SOURCES=$(wildcard ${SRC_DIR}/*.c) $(wildcard ${SRC_DIR}/*/*.c)
 
+TARGET ?= desktop
+
 OUTPUT=libmason.a
 
 .PHONY: final debug enable-debug raylib compile move assemble clean
@@ -32,7 +34,11 @@ endif
 compile:
 	@echo [compiling...]
 	# compile source files
+ifeq ($(TARGET), web)
+	${CC} -c ${CFLAGS} -DPLATFORM_WEB ${SOURCES} ${INCLUDE}
+else
 	${CC} -c ${CFLAGS} ${SOURCES} ${INCLUDE}
+endif
 
 move:
 	@echo [moving files...]

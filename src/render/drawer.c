@@ -141,6 +141,7 @@ void drawer_delete_sprite(mason_drawer_data* drawer, scaffold_list* elem) {
 static void process(scaffold_node* drawer, double delta) {
 	mason_drawer_data* data = (mason_drawer_data*)(drawer->data);
 
+#ifndef PLATFORM_WEB
 	// Drawing sprites to target texture
 	BeginTextureMode(data->target);
 	ClearBackground(WHITE);
@@ -169,6 +170,17 @@ static void process(scaffold_node* drawer, double delta) {
 			(Vector2){0.0f, 0.0f}, 0, WHITE);
 
 	EndDrawing();
+#else
+	BeginDrawing();
+	ClearBackground(WHITE);
+	scaffold_list* elem = data->sprites;
+	while (elem != NULL) {
+		mason_sprite_data* sprite = (mason_sprite_data*)(elem->data);
+		sprite->draw(sprite->node);
+		elem = elem->next;
+	}
+	EndDrawing();
+#endif
 }
 
 static void destroy(scaffold_node* drawer) {
