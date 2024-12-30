@@ -149,7 +149,7 @@ static void process(scaffold_node* drawer, double delta) {
 	scaffold_list* elem = data->sprites;
 	while (elem != NULL) {
 		mason_sprite_data* sprite = (mason_sprite_data*)(elem->data);
-		sprite->draw(sprite->node);
+		if (sprite->visible) sprite->draw(sprite->node);
 		elem = elem->next;
 	}
 
@@ -176,7 +176,7 @@ static void process(scaffold_node* drawer, double delta) {
 	scaffold_list* elem = data->sprites;
 	while (elem != NULL) {
 		mason_sprite_data* sprite = (mason_sprite_data*)(elem->data);
-		sprite->draw(sprite->node);
+		if (sprite->visible) sprite->draw(sprite->node);
 		elem = elem->next;
 	}
 	EndDrawing();

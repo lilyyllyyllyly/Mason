@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include <raylib.h>
 
@@ -16,8 +17,11 @@ mason_sprite_data* mason_sprite_data_create(scaffold_node* node, scaffold_node* 
 	
 	data->node = node;
 	data->drawer = (mason_drawer_data*)(drawer->data);
+
 	data->draw_order = draw_order;
+	data->visible = true;
 	data->elem = drawer_add_sprite(data->drawer, data);
+
 	data->draw = draw;
 
 	return data;
