@@ -21,7 +21,7 @@ static void destroy(scaffold_node* label) {
 
 static void draw(scaffold_node* label) {
 	mason_label_data* data = (mason_label_data*)(label->data);
-	DrawText(data->text, label->global_pos.x, label->global_pos.y, data->font_size, BLACK);
+	DrawText(data->text, label->global_pos.x, label->global_pos.y, data->font_size, WHITE);
 }
 
 scaffold_node* mason_label_create(scaffold_node* drawer, int draw_order, char* text, int font_size, int format) {
